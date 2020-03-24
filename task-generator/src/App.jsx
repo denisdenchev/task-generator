@@ -1,25 +1,32 @@
-import React, { useState, useEffect } from "react";
-// import styles from "./App.module.scss";
-
-// import Button from "./components/Button/Button";
-// import SearchBar from "./components/SearchBar";
-// import Counter from "./components/Counter";
-
+import React from "react";
+import styles from "./App.module.scss";
+import { useState, useEffect } from "react";
 import { firestore } from "./firebase.js";
-
-// import {
-//   faCoffee,
-//   faCheckSquare,
-//   faDog
-// } from "@fortawesome/free-solid-svg-icons";
-// import { library } from "@fortawesome/fontawesome-svg-core";
-
-// library.add(faCoffee, faCheckSquare, faDog);
+import {
+  Button,
+  Row,
+  Container,
+  Col,
+  Form,
+  Navbar,
+  Nav,
+  NavDropdown,
+  Table
+} from "react-bootstrap";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const App = () => {
-  const [todoItems, setTodoItems] = useState([]);
+  const [tasks, setTasks] = useState([]);
 
-  const [newItem, setNewItem] = useState("");
+
+  const [ yourGoal, updateGoal] = useState("")
+  const [ startDate, updateStartDate] = useState("")
+  const [ endDate, updateEndDate] = useState("")
+  const [ uploadImage, updateImage] = useState("")
+  const [updateTask, setUpdateTask] = useState("");
+
+
+
 
   useEffect(() => {
     // first load up page...
@@ -29,11 +36,9 @@ const App = () => {
   const fetchTodos = () => {
     firestore
       .collection("Tasks")
-      .doc("todos")
       .get()
-      .then(doc => {
-        const retrievedItems = doc.data().todos;
-        setTodoItems(retrievedItems);
+      .then(data => {
+        setTasks(data.docs.map(doc => ({...doc.data(), id: doc.id })))
       })
       .catch(err => {
         console.log(err);
@@ -41,16 +46,14 @@ const App = () => {
   };
 
   const addToDb = () => {
-    const newItems = [...todoItems, newItem.toLowerCase()];
-
-    const newDoc = {
-      items: newItems
-    };
-
     firestore
       .collection("Tasks")
-      .doc("todos")
-      .set(newDoc)
+      .add({
+        name: yourGoal,
+        start: startDate,
+        due: endDate,
+        image: uploadImage
+       })
       .then(() => {
         fetchTodos();
       })
@@ -59,64 +62,12 @@ const App = () => {
       });
   };
 
-  const deleteFromDb = item => {
-    const newArray = [...todoItems];
-    const position = newArray.indexOf(item);
-    newArray.splice(position, 1);
-
-    const newDoc = {
-      items: newArray
-    };
+  const deleteFromDb = id => {
+   
 
     firestore
       .collection("Tasks")
-      .doc("todos")
-      .set(newDoc)
-      .then(() => {
-        fetchTodos();
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  };
-
-  const getItemJsx = () => {
-    return todoItems.map(item => (
-      <>
-        <p>{item}</p>
-        <button onClick={() => deleteFromDb(item)}>Delete</button>
-      </>
-    ));
-  };
-
-  const addNewDoc = () => {
-    const userId = "todos";
-
-    const newDoc = {
-      TaskCreated: "20.03.2020",
-      GoalDate: "30.03.2020",
-      ImageForProof:
-        "https://www.rd.com/wp-content/uploads/2018/05/13-Secrets-of-People-Who-Always-Have-a-Clean-House-9.jpg"
-    };
-
-    firestore
-      .collection("Tasks")
-      .doc(userId)
-      .set(newDoc)
-      .then(() => {
-        fetchTodos();
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  };
-
-  const deleteDoc = () => {
-    const userId = "todos";
-
-    firestore
-      .collection("Tasks")
-      .doc(userId)
+      .doc(id)
       .delete()
       .then(() => {
         fetchTodos();
@@ -126,20 +77,138 @@ const App = () => {
       });
   };
 
+   const updateTodo = id => {
+    firestore
+      .collection("Tasks")
+      .doc(id)
+      .set({ name: updateTask })
+      .then(() => {
+        fetchTodos();
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
+ 
   return (
     <>
-      <button onClick={addNewDoc}>Add new Doc</button>
-      <button onClick={deleteDoc}>Delete new Doc</button>
+        {/* /* <Navbar bg="dark" variant="dark">
+          <Navbar.Brand href="#home">Navbar</Navbar.Brand>
+            <Nav className="mr-auto">
+              <Nav.Link href="#home">Home</Nav.Link>
+              <Nav.Link href="#features">Features</Nav.Link>
+              <Nav.Link href="#pricing">Pricing</Nav.Link>
+            </Nav>
+        </Navbar>  */}
+        
+        <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
+          <Navbar.Brand href="#home">Hello, let's keep track of your tasks!</Navbar.Brand>
+          <Nav.Link href="#deets">Login</Nav.Link>
+          <Nav.Link eventKey={2} href="#memes">
+            Logout
+          </Nav.Link>
+        </Navbar>
+        <Container>
+          <Row>
+            <Col>
+              <h2 className={styles.heading}>Note your tasks, don't forget!</h2>
+              <Form>
+                <Form.Group controlId="formBasicCheckbox">
+                  <Form.Control
+                    placeholder="What to do?"
+                    type="text"
+                    value={yourGoal}
+                    onChange={event => updateGoal(event.target.value)}
+                  />
+                  <Form.Control
+                    placeholder="When to start?"
+                    type="text"
+                    value={startDate}
+                    onChange={event => updateStartDate(event.target.value)}
+                  />
+                  <Form.Control
+                    placeholder="When to finish?"
+                    type="text"
+                    value={endDate}
+                    onChange={event => updateEndDate(event.target.value)}
+                  />
+                  <Form.Control
+                    placeholder="Please insert an image URL!"
+                    type="text"
+                    value={uploadImage}
+                    onChange={event => updateImage(event.target.value)}
+                  />
+                </Form.Group>
+                <div class="col text-center">
+                  <Button variant="primary" onClick={addToDb}>
+                    Create Task
+                  </Button>
+                </div>
+              </Form>
+            </Col>
+          </Row>
+          <br />
+          <br />
+          <Row>
+            <Col></Col>
+          </Row>
+        </Container>
 
-      <input
-        type="text"
-        placeholder="Todo item..."
-        onInput={event => setNewItem(event.target.value)}
-      />
-      <button onClick={addToDb}>Submit</button>
-      {getItemJsx()}
+        <section className={styles.test}>
+        {tasks.map(task => (
+          <div className={styles.inside} key={task.id}>
+            {/* <p>{task.id}</p> */}
+            <p>Name of the task: {task.name}</p>
+            <p>Start date: {task.start}</p>
+            <p>Finish date: {task.due}</p>
+            <img src={task.img} />
+            <div>
+              <Button
+                className="text-white m-4"
+                variant="success"
+                onClick={() => deleteFromDb(task.id)}
+              >
+                Task finished - Delete
+              </Button>
+            </div>
+          </div>
+        ))}
+      </section>
+    
+
+      
+      
+      
+      {/* <div>
+        <input
+          type="text"
+          placeholder="What is your goal?"
+          value = {yourGoal}
+          onChange={event => updateGoal(event.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Start date"
+          value = {startDate}
+          onChange={event => updateStartDate(event.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="End date"
+          value= {endDate}
+          onChange={event => updateEndDate(event.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Picure URL"
+          value = {uploadImage}
+          onChange={event => updateImage(event.target.value)}
+        />
+        <button onClick={addToDb}>Submit</button>
+      </div> */}
     </>
   );
-};
 
+}
 export default App;
