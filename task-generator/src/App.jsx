@@ -11,22 +11,18 @@ import {
   Navbar,
   Nav,
   NavDropdown,
-  Table
+  Table,
 } from "react-bootstrap";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const App = () => {
   const [tasks, setTasks] = useState([]);
 
-
-  const [ yourGoal, updateGoal] = useState("")
-  const [ startDate, updateStartDate] = useState("")
-  const [ endDate, updateEndDate] = useState("")
-  const [ uploadImage, updateImage] = useState("")
+  const [yourGoal, updateGoal] = useState("");
+  const [startDate, updateStartDate] = useState("");
+  const [endDate, updateEndDate] = useState("");
+  const [uploadImage, updateImage] = useState("");
   const [updateTask, setUpdateTask] = useState("");
-
-
-
 
   useEffect(() => {
     // first load up page...
@@ -37,10 +33,10 @@ const App = () => {
     firestore
       .collection("Tasks")
       .get()
-      .then(data => {
-        setTasks(data.docs.map(doc => ({...doc.data(), id: doc.id })))
+      .then((data) => {
+        setTasks(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   };
@@ -52,19 +48,17 @@ const App = () => {
         name: yourGoal,
         start: startDate,
         due: endDate,
-        image: uploadImage
-       })
+        image: uploadImage,
+      })
       .then(() => {
         fetchTodos();
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   };
 
-  const deleteFromDb = id => {
-   
-
+  const deleteFromDb = (id) => {
     firestore
       .collection("Tasks")
       .doc(id)
@@ -72,12 +66,12 @@ const App = () => {
       .then(() => {
         fetchTodos();
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   };
 
-   const updateTodo = id => {
+  const updateTodo = (id) => {
     firestore
       .collection("Tasks")
       .doc(id)
@@ -85,15 +79,14 @@ const App = () => {
       .then(() => {
         fetchTodos();
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   };
 
- 
   return (
     <>
-        {/* /* <Navbar bg="dark" variant="dark">
+      {/* /* <Navbar bg="dark" variant="dark">
           <Navbar.Brand href="#home">Navbar</Navbar.Brand>
             <Nav className="mr-auto">
               <Nav.Link href="#home">Home</Nav.Link>
@@ -101,62 +94,64 @@ const App = () => {
               <Nav.Link href="#pricing">Pricing</Nav.Link>
             </Nav>
         </Navbar>  */}
-        
-        <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
-          <Navbar.Brand href="#home">Hello, let's keep track of your tasks!</Navbar.Brand>
-          <Nav.Link href="#deets">Login</Nav.Link>
-          <Nav.Link eventKey={2} href="#memes">
-            Logout
-          </Nav.Link>
-        </Navbar>
-        <Container>
-          <Row>
-            <Col>
-              <h2 className={styles.heading}>Note your tasks, don't forget!</h2>
-              <Form>
-                <Form.Group controlId="formBasicCheckbox">
-                  <Form.Control
-                    placeholder="What to do?"
-                    type="text"
-                    value={yourGoal}
-                    onChange={event => updateGoal(event.target.value)}
-                  />
-                  <Form.Control
-                    placeholder="When to start?"
-                    type="text"
-                    value={startDate}
-                    onChange={event => updateStartDate(event.target.value)}
-                  />
-                  <Form.Control
-                    placeholder="When to finish?"
-                    type="text"
-                    value={endDate}
-                    onChange={event => updateEndDate(event.target.value)}
-                  />
-                  <Form.Control
-                    placeholder="Please insert an image URL!"
-                    type="text"
-                    value={uploadImage}
-                    onChange={event => updateImage(event.target.value)}
-                  />
-                </Form.Group>
-                <div class="col text-center">
-                  <Button variant="primary" onClick={addToDb}>
-                    Create Task
-                  </Button>
-                </div>
-              </Form>
-            </Col>
-          </Row>
-          <br />
-          <br />
-          <Row>
-            <Col></Col>
-          </Row>
-        </Container>
 
-        <section className={styles.test}>
-        {tasks.map(task => (
+      <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
+        <Navbar.Brand href="#home">
+          Hello, let's keep track of your tasks!
+        </Navbar.Brand>
+        <Nav.Link href="#deets">Login</Nav.Link>
+        <Nav.Link eventKey={2} href="#memes">
+          Logout
+        </Nav.Link>
+      </Navbar>
+      <Container>
+        <Row>
+          <Col>
+            <h2 className={styles.heading}>Note your tasks, don't forget!</h2>
+            <Form>
+              <Form.Group controlId="formBasicCheckbox">
+                <Form.Control
+                  placeholder="What to do?"
+                  type="text"
+                  value={yourGoal}
+                  onChange={(event) => updateGoal(event.target.value)}
+                />
+                <Form.Control
+                  placeholder="When to start?"
+                  type="text"
+                  value={startDate}
+                  onChange={(event) => updateStartDate(event.target.value)}
+                />
+                <Form.Control
+                  placeholder="When to finish?"
+                  type="text"
+                  value={endDate}
+                  onChange={(event) => updateEndDate(event.target.value)}
+                />
+                <Form.Control
+                  placeholder="Please insert an image URL!"
+                  type="text"
+                  value={uploadImage}
+                  onChange={(event) => updateImage(event.target.value)}
+                />
+              </Form.Group>
+              <div class="col text-center">
+                <Button variant="primary" onClick={addToDb}>
+                  Create Task
+                </Button>
+              </div>
+            </Form>
+          </Col>
+        </Row>
+        <br />
+        <br />
+        <Row>
+          <Col></Col>
+        </Row>
+      </Container>
+
+      <section className={styles.test}>
+        {tasks.map((task) => (
           <div className={styles.inside} key={task.id}>
             {/* <p>{task.id}</p> */}
             <p>Name of the task: {task.name}</p>
@@ -175,40 +170,7 @@ const App = () => {
           </div>
         ))}
       </section>
-    
-
-      
-      
-      
-      {/* <div>
-        <input
-          type="text"
-          placeholder="What is your goal?"
-          value = {yourGoal}
-          onChange={event => updateGoal(event.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Start date"
-          value = {startDate}
-          onChange={event => updateStartDate(event.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="End date"
-          value= {endDate}
-          onChange={event => updateEndDate(event.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Picure URL"
-          value = {uploadImage}
-          onChange={event => updateImage(event.target.value)}
-        />
-        <button onClick={addToDb}>Submit</button>
-      </div> */}
     </>
   );
-
-}
+};
 export default App;
