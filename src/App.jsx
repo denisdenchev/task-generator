@@ -10,8 +10,6 @@ import {
   Form,
   Navbar,
   Nav,
-  NavDropdown,
-  Table,
 } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -86,21 +84,12 @@ const App = () => {
 
   return (
     <>
-      {/* /* <Navbar bg="dark" variant="dark">
-          <Navbar.Brand href="#home">Navbar</Navbar.Brand>
-            <Nav className="mr-auto">
-              <Nav.Link href="#home">Home</Nav.Link>
-              <Nav.Link href="#features">Features</Nav.Link>
-              <Nav.Link href="#pricing">Pricing</Nav.Link>
-            </Nav>
-        </Navbar>  */}
-
       <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
         <Navbar.Brand href="#home">
           Hello, let's keep track of your tasks!
         </Navbar.Brand>
-        <Nav.Link href="#deets">Login</Nav.Link>
-        <Nav.Link eventKey={2} href="#memes">
+        <Nav.Link href="">Login</Nav.Link>
+        <Nav.Link eventKey={2} href="">
           Logout
         </Nav.Link>
       </Navbar>
@@ -154,10 +143,16 @@ const App = () => {
         {tasks.map((task) => (
           <div className={styles.inside} key={task.id}>
             {/* <p>{task.id}</p> */}
-            <p>Name of the task: {task.name}</p>
-            <p>Start date: {task.start}</p>
-            <p>Finish date: {task.due}</p>
-            <img src={task.img} />
+            <p>
+              Name of the task: <h2> {task.name} </h2>
+            </p>
+            <p>
+              Start date: <h2> {task.start} </h2>
+            </p>
+            <p>
+              Finish date: <h2> {task.due} </h2>
+            </p>
+            <img src={task.image} />
             <div>
               <Button
                 className="text-white m-4"
